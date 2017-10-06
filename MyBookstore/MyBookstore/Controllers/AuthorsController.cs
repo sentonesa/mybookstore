@@ -7,6 +7,8 @@ using MyBookstore.Models;
 using System.Data.SqlClient;
 using MyBookstore.App_Code;
 using System.Data;
+using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
 
 namespace MyBookstore.Controllers
 {
@@ -257,5 +259,33 @@ namespace MyBookstore.Controllers
                 return View();
             }
         }
+
+
+        public ActionResult GenerateReport()
+        {
+            ReportDocument rd = new ReportDocument();
+            rd.Load(Server.MapPath("~/Reports/rptAuthors.rpt"));
+            rd.SetDatabaseLogon("sentonesa", "masaraptalaga03", "TAFT-CL308", "mybookstore");
+            rd.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, true, "Authors Report");
+            return View();
+        }
+
+        public ActionResult GenerateIndividualReport(int? id)
+        {
+            if (id == null)
+                return RedirectToAction("Index");
+
+
+
+            ReportDocument rd = new ReportDocument();
+            rd.Load(Server.MapPath("~/Reports/rptAuthorIndividual.rpt"));
+            rd.SetDatabaseLogon("sentonesa", "masaraptalaga03", "TAFT-CL308", "mybookstore");
+            rd.SetParameterValue("authorID", id);
+            rd.SetParameterValue("Username", "Alec Sentones");
+
+            rd.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, true, "Author #" + id.ToString() + "Report");
+            return View();
+        }
+
     }
 }
